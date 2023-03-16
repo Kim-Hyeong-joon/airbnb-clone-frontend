@@ -11,19 +11,27 @@ import {
 import { FaRegHeart, FaStar } from "react-icons/fa";
 
 interface RoomProps {
-  key: number;
-  index: number;
+  imageUrl: string;
+  name: string;
+  rating: number;
+  city: string;
+  country: string;
+  price: number;
 }
 
-export default function Room({ index }: RoomProps) {
+export default function Room({
+  imageUrl,
+  name,
+  rating,
+  city,
+  country,
+  price,
+}: RoomProps) {
   const gray = useColorModeValue("gray.600", "gray.300");
   return (
     <VStack alignItems={"center"}>
       <Box position="relative" overflow={"hidden"} rounded="3xl" mb={3}>
-        <Image
-          minH="280"
-          src={`https://source.unsplash.com/random/400x400?house/${index}`}
-        />
+        <Image minH="280" src={imageUrl} />
         <Button
           variant={"unstyled"}
           position="absolute"
@@ -37,7 +45,7 @@ export default function Room({ index }: RoomProps) {
       <Box>
         <Grid templateColumns={"6fr 1fr"}>
           <Text textAlign={"start"} as="b" noOfLines={1} fontSize="md">
-            Brålanda, Västra Götalands län, 스웨덴
+            {name}
           </Text>
           <HStack
             _hover={{
@@ -48,15 +56,15 @@ export default function Room({ index }: RoomProps) {
           >
             <FaStar size={15} />
             <Text textAlign="end" fontSize="sm">
-              3.9
+              {rating}
             </Text>
           </HStack>
         </Grid>
         <Text fontSize="sm" color={gray}>
-          Seoul, S. Korea
+          {city}, {country}
         </Text>
         <Text textAlign={"start"} fontSize="sm" color={gray}>
-          <Text as="b">$63</Text> / night
+          <Text as="b">${price}</Text> / night
         </Text>
       </Box>
     </VStack>

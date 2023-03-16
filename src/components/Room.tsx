@@ -39,9 +39,15 @@ export default function Room({ index }: RoomProps) {
           <Text textAlign={"start"} as="b" noOfLines={1} fontSize="md">
             Brålanda, Västra Götalands län, 스웨덴
           </Text>
-          <HStack spacing={1} justifyContent="end">
+          <HStack
+            _hover={{
+              color: "red.100",
+            }}
+            spacing={1}
+            justifyContent="end"
+          >
             <FaStar size={15} />
-            <Text textAlign="end" fontSize="sm" color={gray}>
+            <Text textAlign="end" fontSize="sm">
               3.9
             </Text>
           </HStack>

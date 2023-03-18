@@ -29,16 +29,15 @@ export default function Header() {
   const logoColor = useColorModeValue("red.500", "red.200");
   const Icon = useColorModeValue(FaMoon, FaSun);
   return (
-    <Stack
+    <HStack
       justifyContent={"space-between"}
       py={5}
-      px={10}
+      px={{
+        base: "10",
+        lg: "40",
+      }}
       borderBottomWidth={1}
       alignItems="center"
-      direction={{
-        sm: "column",
-        md: "row",
-      }}
     >
       <Link to="/">
         <Box color={logoColor}>
@@ -61,6 +60,6 @@ export default function Header() {
       </HStack>
       <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
       <SignUpModal isOpen={isSignUpOpen} onClose={onSignUpClose} />
-    </Stack>
+    </HStack>
   );
 }

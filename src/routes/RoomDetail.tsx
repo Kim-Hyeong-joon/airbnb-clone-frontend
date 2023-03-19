@@ -91,11 +91,13 @@ export default function RoomDetail() {
         />
       </HStack>
       <Divider mt={10} mb={10} />
-      <HStack mb="10">
-        <Heading size={"lg"}>★ {roomData?.rating}</Heading>
-        <Heading size={"lg"}>∙</Heading>
-        <Heading size={"lg"}>후기 {reviewsData?.length}개</Heading>
-      </HStack>
+      <Skeleton isLoaded={!isRoomLoading} w="50%">
+        <HStack mb="10">
+          <Heading size={"lg"}>★ {roomData?.rating}</Heading>
+          <Heading size={"lg"}>∙</Heading>
+          <Heading size={"lg"}>후기 {reviewsData?.length}개</Heading>
+        </HStack>
+      </Skeleton>
       <Grid
         templateColumns={{
           base: "1fr",
@@ -106,6 +108,7 @@ export default function RoomDetail() {
       >
         {reviewsData?.map((review, index) => (
           <Review
+            isReviewsLoading={isReviewsLoading}
             key={index}
             user={review.user}
             payload={review.payload}

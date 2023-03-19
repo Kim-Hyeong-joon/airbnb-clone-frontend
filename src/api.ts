@@ -12,3 +12,10 @@ export const getRoom = ({ queryKey }: QueryFunctionContext) => {
   const [first, roomPk] = queryKey;
   return instance.get(`rooms/${roomPk}`).then((response) => response.data);
 };
+
+export const getReviews = ({ queryKey }: QueryFunctionContext) => {
+  const [first, roomPk] = queryKey;
+  return instance
+    .get(`rooms/${roomPk}/reviews`)
+    .then((response) => response.data);
+};

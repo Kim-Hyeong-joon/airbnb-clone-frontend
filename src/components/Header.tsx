@@ -14,6 +14,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { FaAirbnb, FaMoon, FaSun } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { logOut } from "../api";
@@ -37,24 +38,23 @@ export default function Header() {
   const logoColor = useColorModeValue("red.500", "red.200");
   const Icon = useColorModeValue(FaMoon, FaSun);
   const toast = useToast();
+  const queryClient = useQueryClient();
   const onLogOut = async () => {
     const toastId = toast({
       title: "로그아웃 중..",
       description: "우리 이제 언제봐요..?",
       status: "loading",
-      duration: 7000,
       isClosable: true,
       variant: "subtle",
       position: "top",
     });
-    /* const data = await logOut();
-    console.log(data); */
+    await logOut();
+    queryClient.refetchQueries(["me"]);
     setTimeout(() => {
       toast.update(toastId, {
         title: "로그아웃 완료",
         description: "다음에 또 봐요!",
         status: "success",
-        duration: 3000,
         isClosable: true,
         variant: "subtle",
         position: "top",

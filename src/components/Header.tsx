@@ -44,22 +44,18 @@ export default function Header() {
       title: "로그아웃 중..",
       description: "우리 이제 언제봐요..?",
       status: "loading",
-      isClosable: true,
       variant: "subtle",
       position: "top",
     });
     await logOut();
     queryClient.refetchQueries(["me"]);
-    setTimeout(() => {
-      toast.update(toastId, {
-        title: "로그아웃 완료",
-        description: "다음에 또 봐요!",
-        status: "success",
-        isClosable: true,
-        variant: "subtle",
-        position: "top",
-      });
-    }, 3000);
+    toast.update(toastId, {
+      title: "로그아웃 완료",
+      description: "다음에 또 봐요!",
+      status: "success",
+      variant: "subtle",
+      position: "top",
+    });
   };
   return (
     <HStack

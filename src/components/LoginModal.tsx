@@ -56,7 +56,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         position: "top",
       });
       onClose();
-      console.log(data);
       queryClient.refetchQueries(["me"]);
       reset();
     },

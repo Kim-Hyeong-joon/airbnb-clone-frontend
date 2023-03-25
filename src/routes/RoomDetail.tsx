@@ -18,7 +18,7 @@ import { getReviews, getRoom } from "../api";
 import Review from "../components/Review";
 import { IReview, IRoomDetail } from "../types";
 
-export default function RoomDetail() {
+export default function RoomDefiltail() {
   const { roomPk } = useParams();
   const { isLoading: isRoomLoading, data: roomData } = useQuery<IRoomDetail>(
     ["rooms", roomPk],
@@ -62,7 +62,7 @@ export default function RoomDetail() {
                 objectFit={"cover"}
                 w="100%"
                 h="100%"
-                src={roomData?.photos[index].file}
+                src={roomData?.photos[index]?.file}
               />
             </Skeleton>
           </GridItem>

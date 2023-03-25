@@ -36,7 +36,6 @@ interface ISignUpForm {
   username: string;
   password: string;
   password2: string;
-  extraError?: string;
 }
 
 export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {

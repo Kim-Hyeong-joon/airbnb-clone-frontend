@@ -12,23 +12,52 @@ import {
   InputGroup,
   InputLeftAddon,
   Select,
+  Text,
   Textarea,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import { FaBath, FaBed, FaWonSign } from "react-icons/fa";
-import { getAmenities, getCategories } from "../api";
+import { useNavigate } from "react-router-dom";
+import {
+  getAmenities,
+  getCategories,
+  IUplaodRoomVariables,
+  IUploadError,
+  uploadRoom,
+} from "../api";
 import HostOnlyPage from "../components/HostOnlyPage";
 import ProtectedPage from "../components/ProtectedPage";
-import { IAmenity, ICategory } from "../types";
+import { IAmenity, ICategory, IRoomDetail } from "../types";
 
 export default function UploadRoom() {
+  const { register, handleSubmit } = useForm<IUplaodRoomVariables>();
+  const navigate = useNavigate();
+  const toast = useToast();
+  const mutation = useMutation<IRoomDetail, IUploadError, IUplaodRoomVariables>(
+    uploadRoom,
+    {
+      onSuccess: (data) => {
+        toast({
+          status: "success",
+          position: "top",
+          title: "Room Created",
+        });
+        navigate(`/rooms/${data.id}`);
+      },
+    }
+  );
   const { isLoading: isAmenitiesLoading, data: amenities } = useQuery<
     IAmenity[]
   >(["amenities"], getAmenities);
   const { isLoading: isCategoriesLoading, data: categories } = useQuery<
     ICategory[]
   >(["categories"], getCategories);
+  const onSubmit = (data: IUplaodRoomVariables) => {
+    mutation.mutate(data);
+  };
   return (
     <ProtectedPage>
       <HostOnlyPage>
@@ -37,55 +66,103 @@ export default function UploadRoom() {
             <Heading w="100%" textAlign={"center"}>
               Upload Room
             </Heading>
-            <VStack spacing={6} as="form" mt={5}>
+            <VStack
+              spacing={6}
+              as="form"
+              mt={5}
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <FormControl>
                 <FormLabel>Name</FormLabel>
                 <FormHelperText>Write the name of your room</FormHelperText>
-                <Input required type="text" />
+                <Input
+                  {...register("name", { required: true })}
+                  required
+                  type="text"
+                />
               </FormControl>
               <FormControl>
                 <FormLabel>Country</FormLabel>
-                <Input required type="text" />
+                <Input
+                  {...register("country", { required: true })}
+                  required
+                  type="text"
+                />
               </FormControl>
               <FormControl>
                 <FormLabel>City</FormLabel>
-                <Input required type="text" />
+                <Input
+                  {...register("city", { required: true })}
+                  required
+                  type="text"
+                />
               </FormControl>
               <FormControl>
                 <FormLabel>Address</FormLabel>
-                <Input required type="text" />
+                <Input
+                  {...register("address", { required: true })}
+                  required
+                  type="text"
+                />
               </FormControl>
               <FormControl>
                 <FormLabel>Price</FormLabel>
                 <InputGroup>
                   <InputLeftAddon children={<FaWonSign />} />
-                  <Input required type="number" min={0} />
+                  <Input
+                    {...register("price", { required: true })}
+                    required
+                    type="number"
+                    min={0}
+                  />
                 </InputGroup>
               </FormControl>
               <FormControl>
                 <FormLabel>Rooms</FormLabel>
                 <InputGroup>
                   <InputLeftAddon children={<FaBed />} />
-                  <Input required type="number" min={0} />
+                  <Input
+                    {...register("rooms", { required: true })}
+                    required
+                    type="number"
+                    min={0}
+                  />
                 </InputGroup>
               </FormControl>
               <FormControl>
                 <FormLabel>Toilets</FormLabel>
                 <InputGroup>
                   <InputLeftAddon children={<FaBath />} />
-                  <Input required type="number" min={0} />
+                  <Input
+                    {...register("toilets", { required: true })}
+                    required
+                    type="number"
+                    min={0}
+                  />
                 </InputGroup>
               </FormControl>
               <FormControl>
                 <FormLabel>Description</FormLabel>
-                <Textarea />
+                <Textarea
+                  {...register("description", { required: true })}
+                  required
+                />
               </FormControl>
               <FormControl>
-                <Checkbox>Pet friendly</Checkbox>
+                <Checkbox
+                  {...register("pet_friendly", { required: true })}
+                  required
+                >
+                  Pet friendly
+                </Checkbox>
               </FormControl>
               <FormControl>
                 <FormLabel>Kind of room</FormLabel>
-                <Select placeholder="-- Choose a kind --">
+                <Select
+                  required
+                  {...register("kind", { required: true })}
+                  placeholder="-- Choose a kind --"
+                >
                   <option value="entire_place">Entire Place</option>
                   <option value="private_room">Private Room</option>
                   <option value="shared_room">Shared Room</option>
@@ -96,7 +173,11 @@ export default function UploadRoom() {
               </FormControl>
               <FormControl>
                 <FormLabel>Category</FormLabel>
-                <Select placeholder="-- Choose a category --">
+                <Select
+                  required
+                  {...register("category", { required: true })}
+                  placeholder="-- Choose a category --"
+                >
                   {categories?.map((category) => (
                     <option key={category.pk} value={category.pk}>
                       {category.name}
@@ -112,13 +193,24 @@ export default function UploadRoom() {
                 <Grid templateColumns={"1fr 1fr"} gap="5">
                   {amenities?.map((amenity) => (
                     <Box key={amenity.pk}>
-                      <Checkbox value={amenity.pk}>{amenity.name}</Checkbox>
+                      <Checkbox {...register("amenities")} value={amenity.pk}>
+                        {amenity.name}
+                      </Checkbox>
                       <FormHelperText>{amenity.description}</FormHelperText>
                     </Box>
                   ))}
                 </Grid>
               </FormControl>
-              <Button size={"lg"} w="100%" colorScheme={"red"}>
+              {mutation.isError ? (
+                <Text color={"red.500"}>Something went wrong</Text>
+              ) : null}
+              <Button
+                isLoading={mutation.isLoading}
+                type="submit"
+                size={"lg"}
+                w="100%"
+                colorScheme={"red"}
+              >
                 Upload Room
               </Button>
             </VStack>

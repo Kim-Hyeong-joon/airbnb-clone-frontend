@@ -58,13 +58,16 @@ export default function RoomDefiltail() {
             key={index}
           >
             <Skeleton isLoaded={!isRoomLoading} h="100%" w="100%">
-              <Image
-                objectFit={"cover"}
-                w="100%"
-                h="100%"
-                src={roomData?.photos[index]?.file}
-              />
+              {roomData?.photos && roomData.photos.length > 0 ? (
+                <Image
+                  objectFit={"cover"}
+                  w="100%"
+                  h="100%"
+                  src={roomData?.photos[index].file}
+                />
+              ) : null}
             </Skeleton>
+            ∫
           </GridItem>
         ))}
       </Grid>

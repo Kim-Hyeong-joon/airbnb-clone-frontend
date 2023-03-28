@@ -67,7 +67,6 @@ export default function RoomDefiltail() {
                 />
               ) : null}
             </Skeleton>
-            ∫
           </GridItem>
         ))}
       </Grid>

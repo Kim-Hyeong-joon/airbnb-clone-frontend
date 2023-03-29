@@ -18,7 +18,7 @@ import "react-calendar/dist/Calendar.css";
 import { getReviews, getRoom } from "../api";
 import Review from "../components/Review";
 import { IReview, IRoomDetail } from "../types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function RoomDefiltail() {
   const { roomPk } = useParams();
@@ -29,8 +29,18 @@ export default function RoomDefiltail() {
   const { isLoading: isReviewsLoading, data: reviewsData } = useQuery<
     IReview[]
   >(["rooms", roomPk, "reviews"], getReviews);
-  const [dates, setDates] = useState<Date | (Date | null)[] | null>();
-  console.log(dates);
+  const [dates, setDates] = useState<Date[] | null>();
+  useEffect(() => {
+    if (dates) {
+      const [firstDate, secondDate] = dates;
+      const [checkIn] = firstDate.toJSON().split("T");
+      const [checkOut] = secondDate.toJSON().split("T");
+      console.log(checkIn, checkOut);
+    }
+  }, [dates]);
+  const handleDateChange = (value: any) => {
+    setDates(value);
+  };
   return (
     <Box
       mt={5}
@@ -120,7 +130,7 @@ export default function RoomDefiltail() {
         </Box>
         <Box pt={10}>
           <Calendar
-            onChange={setDates}
+            onChange={handleDateChange}
             prev2Label={null}
             next2Label={null}
             minDetail="month"

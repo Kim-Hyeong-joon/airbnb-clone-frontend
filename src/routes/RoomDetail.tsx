@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Circle,
   Divider,
   Grid,
   GridItem,
@@ -14,9 +13,12 @@ import {
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 import { getReviews, getRoom } from "../api";
 import Review from "../components/Review";
 import { IReview, IRoomDetail } from "../types";
+import { useState } from "react";
 
 export default function RoomDefiltail() {
   const { roomPk } = useParams();
@@ -27,6 +29,8 @@ export default function RoomDefiltail() {
   const { isLoading: isReviewsLoading, data: reviewsData } = useQuery<
     IReview[]
   >(["rooms", roomPk, "reviews"], getReviews);
+  const [dates, setDates] = useState<Date | (Date | null)[] | null>();
+  console.log(dates);
   return (
     <Box
       mt={5}
@@ -70,53 +74,61 @@ export default function RoomDefiltail() {
           </GridItem>
         ))}
       </Grid>
-      <HStack w="100%" justifyContent={"space-between"} mt={10}>
-        <VStack alignItems={"flex-start"}>
-          <Skeleton isLoaded={!isRoomLoading}>
-            <Heading size={"lg"} noOfLines={1}>
-              {roomData?.owner.name}님이 호스팅 하는 {roomData?.name}
-            </Heading>
-          </Skeleton>
-          <Skeleton isLoaded={!isRoomLoading}>
-            <HStack w="100%" justifyContent="flex-start">
-              <Text>방 {roomData?.rooms}개</Text>
-              <Text>∙</Text>
-              <Text>욕실 {roomData?.toilets}개</Text>
+      <Grid templateColumns={"2fr 1fr"} gap={20}>
+        <Box>
+          <HStack w="100%" justifyContent={"space-between"} mt={10}>
+            <VStack alignItems={"flex-start"}>
+              <Skeleton isLoaded={!isRoomLoading}>
+                <Heading size={"lg"} noOfLines={1}>
+                  {roomData?.owner.name}님이 호스팅 하는 {roomData?.name}
+                </Heading>
+              </Skeleton>
+              <Skeleton isLoaded={!isRoomLoading}>
+                <HStack w="100%" justifyContent="flex-start">
+                  <Text>방 {roomData?.rooms}개</Text>
+                  <Text>∙</Text>
+                  <Text>욕실 {roomData?.toilets}개</Text>
+                </HStack>
+              </Skeleton>
+            </VStack>
+            <Avatar
+              name={roomData?.owner.name}
+              overflow={"hidden"}
+              size={"lg"}
+              src={roomData?.owner.avatar}
+            />
+          </HStack>
+          <Divider mt={10} mb={10} />
+          <Skeleton isLoaded={!isRoomLoading} w="50%">
+            <HStack mb="10">
+              <Heading size={"lg"}>★ {roomData?.rating}</Heading>
+              <Heading size={"lg"}>∙</Heading>
+              <Heading size={"lg"}>후기 {reviewsData?.length}개</Heading>
             </HStack>
           </Skeleton>
-        </VStack>
-        <Avatar
-          name={roomData?.owner.name}
-          overflow={"hidden"}
-          size={"lg"}
-          src={roomData?.owner.avatar}
-        />
-      </HStack>
-      <Divider mt={10} mb={10} />
-      <Skeleton isLoaded={!isRoomLoading} w="50%">
-        <HStack mb="10">
-          <Heading size={"lg"}>★ {roomData?.rating}</Heading>
-          <Heading size={"lg"}>∙</Heading>
-          <Heading size={"lg"}>후기 {reviewsData?.length}개</Heading>
-        </HStack>
-      </Skeleton>
-      <Grid
-        templateColumns={{
-          base: "1fr",
-          lg: "1fr 1fr",
-        }}
-        rowGap={10}
-        columnGap={20}
-      >
-        {reviewsData?.map((review, index) => (
-          <Review
-            isReviewsLoading={isReviewsLoading}
-            key={index}
-            user={review.user}
-            payload={review.payload}
-            rating={review.rating}
+          <Grid templateColumns={"1fr"} rowGap={10} columnGap={20}>
+            {reviewsData?.map((review, index) => (
+              <Review
+                isReviewsLoading={isReviewsLoading}
+                key={index}
+                user={review.user}
+                payload={review.payload}
+                rating={review.rating}
+              />
+            ))}
+          </Grid>
+        </Box>
+        <Box pt={10}>
+          <Calendar
+            onChange={setDates}
+            prev2Label={null}
+            next2Label={null}
+            minDetail="month"
+            minDate={new Date()}
+            maxDate={new Date(Date.now() + 60 * 60 * 24 * 7 * 4 * 6 * 1000)}
+            selectRange
           />
-        ))}
+        </Box>
       </Grid>
     </Box>
   );

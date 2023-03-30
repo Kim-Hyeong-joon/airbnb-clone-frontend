@@ -20,6 +20,7 @@ import { checkBooking, getReviews, getRoom } from "../api";
 import Review from "../components/Review";
 import { IReview, IRoomDetail } from "../types";
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 
 export default function RoomDefiltail() {
   const { roomPk } = useParams();
@@ -40,8 +41,6 @@ export default function RoomDefiltail() {
     }
   );
 
-  console.log(isBookingChecking, dates);
-
   const handleDateChange = (value: any) => {
     setDates(value);
   };
@@ -53,6 +52,9 @@ export default function RoomDefiltail() {
         lg: "40",
       }}
     >
+      <Helmet>
+        <title>{roomData ? roomData.name : "Loading"}</title>
+      </Helmet>
       <Skeleton h="43px" width="75%" isLoaded={!isRoomLoading}>
         <Heading noOfLines={1}>{roomData?.name}</Heading>
       </Skeleton>

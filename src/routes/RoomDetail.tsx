@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Divider,
   Grid,
   GridItem,
@@ -15,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { getReviews, getRoom } from "../api";
+import { checkBooking, getReviews, getRoom } from "../api";
 import Review from "../components/Review";
 import { IReview, IRoomDetail } from "../types";
 import { useEffect, useState } from "react";
@@ -29,15 +30,18 @@ export default function RoomDefiltail() {
   const { isLoading: isReviewsLoading, data: reviewsData } = useQuery<
     IReview[]
   >(["rooms", roomPk, "reviews"], getReviews);
-  const [dates, setDates] = useState<Date[] | null>();
-  useEffect(() => {
-    if (dates) {
-      const [firstDate, secondDate] = dates;
-      const [checkIn] = firstDate.toJSON().split("T");
-      const [checkOut] = secondDate.toJSON().split("T");
-      console.log(checkIn, checkOut);
+  const [dates, setDates] = useState<Date[] | undefined>();
+  const { isLoading: isBookingChecking, data: checkBookingData } = useQuery(
+    ["check", roomPk, dates],
+    checkBooking,
+    {
+      cacheTime: 0,
+      enabled: dates !== undefined,
     }
-  }, [dates]);
+  );
+
+  console.log(isBookingChecking, dates);
+
   const handleDateChange = (value: any) => {
     setDates(value);
   };
@@ -138,6 +142,18 @@ export default function RoomDefiltail() {
             maxDate={new Date(Date.now() + 60 * 60 * 24 * 7 * 4 * 6 * 1000)}
             selectRange
           />
+          <Button
+            my={5}
+            w="100%"
+            colorScheme={"red"}
+            isLoading={isBookingChecking}
+            isDisabled={!checkBookingData?.ok}
+          >
+            Make booking
+          </Button>
+          {!isBookingChecking && !checkBookingData?.ok ? (
+            <Text color="red.500">Can't book on those dates, sorry.</Text>
+          ) : null}
         </Box>
       </Grid>
     </Box>

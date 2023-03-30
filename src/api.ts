@@ -1,4 +1,4 @@
-import { QueryFunctionContext } from "@tanstack/react-query";
+import { QueryFunctionContext, QueryKey } from "@tanstack/react-query";
 import axios from "axios";
 import Cookie from "js-cookie";
 import { IRoomDetail } from "./types";
@@ -158,3 +158,21 @@ export const uploadRoom = (variables: IUplaodRoomVariables) =>
       },
     })
     .then((response) => response.data);
+
+type CheckBookingQueryKey = [string, string?, Date[]?];
+
+export const checkBooking = ({
+  queryKey,
+}: QueryFunctionContext<CheckBookingQueryKey>) => {
+  const [first, roomPk, dates] = queryKey;
+  if (dates) {
+    const [firstDate, secondDate] = dates;
+    const [checkIn] = firstDate.toJSON().split("T");
+    const [checkOut] = secondDate.toJSON().split("T");
+    return instance
+      .get(
+        `rooms/${roomPk}/bookings/check?check_in=${checkIn}&check_out=${checkOut}`
+      )
+      .then((response) => response.data);
+  }
+};

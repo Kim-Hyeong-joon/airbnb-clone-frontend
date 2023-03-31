@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { checkBooking, getReviews, getRoom } from "../api";
@@ -21,6 +21,7 @@ import Review from "../components/Review";
 import { IReview, IRoomDetail } from "../types";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
+import { FaPencilAlt } from "react-icons/fa";
 
 export default function RoomDefiltail() {
   const { roomPk } = useParams();
@@ -55,9 +56,18 @@ export default function RoomDefiltail() {
       <Helmet>
         <title>{roomData ? roomData.name : "Loading"}</title>
       </Helmet>
-      <Skeleton h="43px" width="75%" isLoaded={!isRoomLoading}>
-        <Heading noOfLines={1}>{roomData?.name}</Heading>
-      </Skeleton>
+      <HStack justifyContent={"space-between"}>
+        <Skeleton h="43px" width="75%" isLoaded={!isRoomLoading}>
+          <Heading noOfLines={1}>{roomData?.name}</Heading>
+        </Skeleton>
+        {roomData?.is_owner ? (
+          <Link to={`/rooms/${roomPk}/edit`}>
+            <Button colorScheme={"gray"}>
+              <FaPencilAlt fontSize={"15"} />
+            </Button>
+          </Link>
+        ) : null}
+      </HStack>
       <Grid
         mt={5}
         templateColumns="repeat(4,1fr)"

@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Root from "./components/Root";
+import EditRoom from "./routes/EditRoom";
 import GithubConfirm from "./routes/GithubConfirm";
 import Home from "./routes/Home";
 import KakaoConfirm from "./routes/KakaoConfirm";
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
         path: "rooms/:roomPk",
         children: [
           { path: "", element: <RoomDetail /> },
+          { path: "edit", element: <EditRoom /> },
           { path: "photos", element: <UploadPhotos /> },
         ],
       },

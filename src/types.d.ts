@@ -48,6 +48,7 @@ export interface IRoomDetail extends IRoomList {
   category: ICategory;
   owner: IRoomOwner;
   amenities: IAmenity[];
+  reviews_count: number;
 }
 
 export interface IReview {

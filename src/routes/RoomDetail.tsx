@@ -8,22 +8,36 @@ import {
   Heading,
   HStack,
   Image,
+  Input,
+  InputGroup,
+  InputLeftAddon,
   Skeleton,
   Text,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { checkBooking, getReviews, getRoom } from "../api";
+import {
+  checkBooking,
+  getReviews,
+  getRoom,
+  IReserveBooking,
+  IReserveError,
+  IReserveSuccess,
+  reserveBooking,
+} from "../api";
 import Review from "../components/Review";
 import { IReview, IRoomDetail } from "../types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Helmet } from "react-helmet";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaUserFriends } from "react-icons/fa";
+import { useForm } from "react-hook-form";
 
-export default function RoomDefiltail() {
+export default function RoomDetail() {
+  const { register, watch } = useForm();
   const { roomPk } = useParams();
   const { isLoading: isRoomLoading, data: roomData } = useQuery<IRoomDetail>(
     ["rooms", roomPk],
@@ -33,17 +47,39 @@ export default function RoomDefiltail() {
     IReview[]
   >(["rooms", roomPk, "reviews"], getReviews);
   const [dates, setDates] = useState<Date[] | undefined>();
-  const { isLoading: isBookingChecking, data: checkBookingData } = useQuery(
-    ["check", roomPk, dates],
-    checkBooking,
-    {
-      cacheTime: 0,
-      enabled: dates !== undefined,
-    }
-  );
-
+  // Checking the dates are valid immediately
+  const {
+    isLoading: isBookingChecking,
+    data: checkBookingData,
+    refetch,
+  } = useQuery(["check", roomPk, dates], checkBooking, {
+    cacheTime: 0,
+    enabled: dates !== undefined,
+  });
   const handleDateChange = (value: any) => {
     setDates(value);
+  };
+  // Reserving booking
+  const toast = useToast();
+  const mutation = useMutation<IReserveSuccess, IReserveError, IReserveBooking>(
+    reserveBooking,
+    {
+      onSuccess: () => {
+        refetch();
+        toast({
+          position: "top",
+          status: "success",
+          title: "Booking reserved!",
+        });
+      },
+      onError: (error) => console.log(error),
+    }
+  );
+  const onReservationSubmit = () => {
+    if (dates && roomPk) {
+      const guests = watch("guests");
+      mutation.mutate({ dates, roomPk, guests });
+    }
   };
   return (
     <Box
@@ -129,7 +165,7 @@ export default function RoomDefiltail() {
             <HStack mb="10">
               <Heading size={"lg"}>★ {roomData?.rating}</Heading>
               <Heading size={"lg"}>∙</Heading>
-              <Heading size={"lg"}>후기 {reviewsData?.length}개</Heading>
+              <Heading size={"lg"}>후기 {roomData?.reviews_count}개</Heading>
             </HStack>
           </Skeleton>
           <Grid templateColumns={"1fr"} rowGap={10} columnGap={20}>
@@ -154,12 +190,23 @@ export default function RoomDefiltail() {
             maxDate={new Date(Date.now() + 60 * 60 * 24 * 7 * 4 * 6 * 1000)}
             selectRange
           />
+          <Text mt="4">Guests</Text>
+          <InputGroup>
+            <InputLeftAddon children={<FaUserFriends />} />
+            <Input
+              {...register("guests", { required: true })}
+              required
+              type="number"
+              min={0}
+            />
+          </InputGroup>
           <Button
             my={5}
             w="100%"
             colorScheme={"red"}
             isLoading={isBookingChecking}
             isDisabled={!checkBookingData?.ok}
+            onClick={onReservationSubmit}
           >
             Make booking
           </Button>

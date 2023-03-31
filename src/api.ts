@@ -1,4 +1,8 @@
-import { QueryFunctionContext, QueryKey } from "@tanstack/react-query";
+import {
+  MutationFunction,
+  QueryFunctionContext,
+  QueryKey,
+} from "@tanstack/react-query";
 import axios from "axios";
 import Cookie from "js-cookie";
 import { formatDate } from "./lib/utils";
@@ -202,4 +206,39 @@ export const checkBooking = ({
       )
       .then((response) => response.data);
   }
+};
+
+export interface IReserveBooking {
+  dates: Date[];
+  roomPk: string;
+  guests: number;
+}
+
+export interface IReserveSuccess {
+  pk: string;
+  check_in: string;
+  check_out: string;
+  experience_time: string;
+  guests: number;
+}
+
+export interface IReserveError {
+  check_in: string[];
+  check_out: string[];
+  guests: string[];
+}
+
+export const reserveBooking = ({ dates, roomPk, guests }: IReserveBooking) => {
+  const [firstDate, secondDate] = dates;
+  const checkIn = formatDate(firstDate);
+  const checkOut = formatDate(secondDate);
+  const data = { check_in: checkIn, check_out: checkOut, guests: guests };
+
+  return instance
+    .post(`rooms/${roomPk}/bookings`, data, {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+      },
+    })
+    .then((response) => response.data);
 };

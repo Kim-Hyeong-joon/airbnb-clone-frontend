@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Divider,
+  FormControl,
+  FormLabel,
   Grid,
   GridItem,
   Heading,
@@ -37,7 +39,6 @@ import { FaPencilAlt, FaUserFriends } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 
 export default function RoomDetail() {
-  const { register, watch } = useForm();
   const { roomPk } = useParams();
   const { isLoading: isRoomLoading, data: roomData } = useQuery<IRoomDetail>(
     ["rooms", roomPk],
@@ -64,23 +65,31 @@ export default function RoomDetail() {
   const mutation = useMutation<IReserveSuccess, IReserveError, IReserveBooking>(
     reserveBooking,
     {
-      onSuccess: () => {
+      onSuccess: (data) => {
         refetch();
         toast({
           position: "top",
           status: "success",
-          title: "Booking reserved!",
+          title: "Reserved room",
+          description: `room: ${data.room}, check in: ${data.check_in} check out: ${data.check_out}`,
         });
       },
       onError: (error) => console.log(error),
     }
   );
-  const onReservationSubmit = () => {
+  interface IGuest {
+    guests: number;
+  }
+  const { register, watch, handleSubmit } = useForm<IGuest>();
+
+  const onReservationSubmit = (data: IGuest) => {
     if (dates && roomPk) {
-      const guests = watch("guests");
+      const guests = data.guests;
+      console.log(guests);
       mutation.mutate({ dates, roomPk, guests });
     }
   };
+
   return (
     <Box
       mt={5}
@@ -190,26 +199,35 @@ export default function RoomDetail() {
             maxDate={new Date(Date.now() + 60 * 60 * 24 * 7 * 4 * 6 * 1000)}
             selectRange
           />
-          <Text mt="4">Guests</Text>
-          <InputGroup>
-            <InputLeftAddon children={<FaUserFriends />} />
-            <Input
-              {...register("guests", { required: true })}
-              required
-              type="number"
-              min={0}
-            />
-          </InputGroup>
-          <Button
-            my={5}
-            w="100%"
-            colorScheme={"red"}
-            isLoading={isBookingChecking}
-            isDisabled={!checkBookingData?.ok}
-            onClick={onReservationSubmit}
-          >
-            Make booking
-          </Button>
+          <VStack as="form" onSubmit={handleSubmit(onReservationSubmit)}>
+            <FormControl>
+              <FormLabel>Guests</FormLabel>
+              <InputGroup>
+                <InputLeftAddon children={<FaUserFriends />} />
+                <Input
+                  {...register("guests", { required: true })}
+                  required
+                  type="number"
+                  min={0}
+                />
+              </InputGroup>
+            </FormControl>
+            <Button
+              type="submit"
+              my={5}
+              w="100%"
+              colorScheme={"red"}
+              isLoading={isBookingChecking}
+              isDisabled={!checkBookingData?.ok && Boolean(dates)}
+            >
+              Make booking
+            </Button>
+          </VStack>
+          <Link to={`/rooms/${roomPk}/reservations`}>
+            <Button colorScheme={"pink"} mt="5" w="100%">
+              {roomData?.is_owner ? "방 예약 현황" : "나의 예약 현황"}
+            </Button>
+          </Link>
           {!isBookingChecking && !checkBookingData?.ok ? (
             <Text color="red.500">Can't book on those dates, sorry.</Text>
           ) : null}

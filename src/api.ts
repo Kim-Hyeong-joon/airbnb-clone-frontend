@@ -6,6 +6,7 @@ import {
 import axios from "axios";
 import Cookie from "js-cookie";
 import { formatDate } from "./lib/utils";
+import { IBooking } from "./routes/RoomReservation";
 import { IRoomDetail } from "./types";
 
 const instance = axios.create({
@@ -216,6 +217,7 @@ export interface IReserveBooking {
 
 export interface IReserveSuccess {
   pk: string;
+  room: string;
   check_in: string;
   check_out: string;
   experience_time: string;
@@ -240,5 +242,30 @@ export const reserveBooking = ({ dates, roomPk, guests }: IReserveBooking) => {
         "X-CSRFToken": Cookie.get("csrftoken") || "",
       },
     })
+    .then((response) => response.data);
+};
+
+interface IFormData {
+  year: number;
+  month: number;
+}
+
+export type GetReservationQueryKey = [
+  string,
+  string?,
+  {
+    year: number;
+    month: number;
+  }?
+];
+
+export const getReservation = ({
+  queryKey,
+}: QueryFunctionContext<GetReservationQueryKey>) => {
+  const [_, roomPk, formData] = queryKey;
+  const year = formData?.year;
+  const month = formData?.month;
+  return instance
+    .get(`rooms/${roomPk}/bookings?year=${year}&month=${month}`)
     .then((response) => response.data);
 };

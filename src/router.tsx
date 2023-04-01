@@ -6,6 +6,7 @@ import Home from "./routes/Home";
 import KakaoConfirm from "./routes/KakaoConfirm";
 import NotFound from "./routes/NotFound";
 import RoomDetail from "./routes/RoomDetail";
+import RoomReservation from "./routes/RoomReservation";
 import UploadPhotos from "./routes/UploadPhotos";
 import UploadRoom from "./routes/UploadRoom";
 
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
           { path: "", element: <RoomDetail /> },
           { path: "edit", element: <EditRoom /> },
           { path: "photos", element: <UploadPhotos /> },
+          { path: "reservations", element: <RoomReservation /> },
         ],
       },
       {

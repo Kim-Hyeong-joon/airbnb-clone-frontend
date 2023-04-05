@@ -54,7 +54,6 @@ export default function Header() {
     },
     onSuccess: () => {
       if (toastId.current) {
-        queryClient.refetchQueries(["me"]);
         toast.update(toastId.current, {
           title: "로그아웃 완료",
           description: "다음에 또 봐요!",
@@ -62,6 +61,7 @@ export default function Header() {
           variant: "subtle",
           position: "top",
         });
+        queryClient.refetchQueries(["me"]);
       }
     },
   });

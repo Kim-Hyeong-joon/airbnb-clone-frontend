@@ -9,6 +9,12 @@ import { formatDate } from "./lib/utils";
 import { IBooking } from "./routes/RoomReservation";
 import { IRoomDetail } from "./types";
 
+const token = localStorage.getItem("token");
+
+if (token) {
+  axios.defaults.headers.common["Authorization"] = token;
+}
+
 const instance = axios.create({
   baseURL:
     process.env.NODE_ENV === "development"
@@ -35,14 +41,17 @@ export const getReviews = ({ queryKey }: QueryFunctionContext) => {
 export const getMe = () =>
   instance.get(`users/me`).then((response) => response.data);
 
-export const logOut = () =>
-  instance
+export const logOut = () => {
+  axios.defaults.headers.common["Authorization"] = null;
+  localStorage.removeItem("token");
+  return instance
     .post("users/log-out", null, {
       headers: {
         "X-CSRFToken": Cookie.get("csrftoken") || "",
       },
     })
     .then((response) => response.data);
+};
 
 export const githubLogIn = (code: string) =>
   instance
@@ -76,7 +85,7 @@ export interface IUsernameLoginVariables {
 }
 
 export interface IUsernameLoginSuccess {
-  ok: string;
+  token: string;
 }
 
 export interface IUsernameLoginError {
@@ -89,7 +98,7 @@ export const usernameLogIn = ({
 }: IUsernameLoginVariables) =>
   instance
     .post(
-      `users/log-in`,
+      `users/jwt-login`,
       { username, password },
       {
         headers: {

@@ -24,6 +24,7 @@ import {
   usernameLogIn,
 } from "../api";
 import SocialLogin from "./socialLogin";
+import axios from "axios";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -50,6 +51,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     IUsernameLoginVariables
   >(usernameLogIn, {
     onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      axios.defaults.headers.common["Authorization"] = `${data.token}`;
       toast({
         title: "어서오세요!",
         status: "success",

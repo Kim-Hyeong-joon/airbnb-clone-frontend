@@ -25,6 +25,7 @@ import {
 } from "../api";
 import SocialLogin from "./socialLogin";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -52,13 +53,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   >(usernameLogIn, {
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
-      axios.defaults.headers.common["Authorization"] = `${data.token}`;
+      axios.defaults.headers.common["Authorization"] = data.token;
       toast({
         title: "어서오세요!",
         status: "success",
         position: "top",
       });
       onClose();
+      window.location.replace("/");
       queryClient.refetchQueries(["me"]);
       reset();
     },

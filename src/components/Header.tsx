@@ -53,6 +53,7 @@ export default function Header() {
       });
     },
     onSuccess: () => {
+      window.location.replace("/");
       if (toastId.current) {
         toast.update(toastId.current, {
           title: "로그아웃 완료",

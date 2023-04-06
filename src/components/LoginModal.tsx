@@ -52,15 +52,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     IUsernameLoginVariables
   >(usernameLogIn, {
     onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
-      axios.defaults.headers.common["Authorization"] = data.token;
       toast({
         title: "어서오세요!",
         status: "success",
         position: "top",
       });
       onClose();
-      window.location.replace("/");
+      /* window.location.replace("/"); */
       queryClient.refetchQueries(["me"]);
       reset();
     },

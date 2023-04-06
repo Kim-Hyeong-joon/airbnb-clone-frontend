@@ -23,6 +23,7 @@ import { logOut } from "../api";
 import useUser from "../lib/useUser";
 import LoginModal from "./LoginModal";
 import SignUpModal from "./SignUpModal";
+import axios from "axios";
 
 export default function Header() {
   const { userLoading, isLoggedIn, user } = useUser();
@@ -53,7 +54,9 @@ export default function Header() {
       });
     },
     onSuccess: () => {
-      window.location.replace("/");
+      //window.location.replace("/");
+      delete axios.defaults.headers.common["Authorization"];
+      localStorage.removeItem("token");
       if (toastId.current) {
         toast.update(toastId.current, {
           title: "로그아웃 완료",

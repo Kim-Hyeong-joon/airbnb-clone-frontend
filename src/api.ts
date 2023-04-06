@@ -73,7 +73,13 @@ export const githubLogIn = (code: string) =>
         },
       }
     )
-    .then((response) => response.status);
+    .then((response) => {
+      localStorage.setItem("token", response.data.token);
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Token ${response.data.token}`;
+      return response.status;
+    });
 
 export const kakaoLogin = (code: string) =>
   instance

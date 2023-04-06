@@ -223,11 +223,14 @@ export default function RoomDetail() {
               Make booking
             </Button>
           </VStack>
-          <Link to={`/rooms/${roomPk}/reservations`}>
-            <Button colorScheme={"pink"} mt="5" w="100%">
-              {roomData?.is_owner ? "방 예약 현황" : "나의 예약 현황"}
-            </Button>
-          </Link>
+          {localStorage.getItem("token") ? (
+            <Link to={`/rooms/${roomPk}/reservations`}>
+              <Button colorScheme={"pink"} mt="5" w="100%">
+                {roomData?.is_owner ? "방 예약 현황" : "나의 예약 현황"}
+              </Button>
+            </Link>
+          ) : null}
+
           {!isBookingChecking && !checkBookingData?.ok ? (
             <Text color="red.500">Can't book on those dates, sorry.</Text>
           ) : null}

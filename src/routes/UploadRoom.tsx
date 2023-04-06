@@ -149,12 +149,7 @@ export default function UploadRoom() {
                 />
               </FormControl>
               <FormControl>
-                <Checkbox
-                  {...register("pet_friendly", { required: true })}
-                  required
-                >
-                  Pet friendly
-                </Checkbox>
+                <Checkbox {...register("pet_friendly")}>Pet friendly</Checkbox>
               </FormControl>
               <FormControl>
                 <FormLabel>Kind of room</FormLabel>

@@ -212,16 +212,18 @@ export default function RoomDetail() {
                 />
               </InputGroup>
             </FormControl>
-            <Button
-              type="submit"
-              my={5}
-              w="100%"
-              colorScheme={"red"}
-              isLoading={isBookingChecking}
-              isDisabled={!checkBookingData?.ok && Boolean(dates)}
-            >
-              Make booking
-            </Button>
+            {localStorage.getItem("token") ? (
+              <Button
+                type="submit"
+                my={5}
+                w="100%"
+                colorScheme={"red"}
+                isLoading={isBookingChecking}
+                isDisabled={!checkBookingData?.ok && Boolean(dates)}
+              >
+                Make booking
+              </Button>
+            ) : null}
           </VStack>
           {localStorage.getItem("token") ? (
             <Link to={`/rooms/${roomPk}/reservations`}>

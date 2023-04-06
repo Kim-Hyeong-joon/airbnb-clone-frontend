@@ -34,7 +34,13 @@ export const getRoom = ({ queryKey }: QueryFunctionContext) => {
 export const getReviews = ({ queryKey }: QueryFunctionContext) => {
   const [first, roomPk] = queryKey;
   return instance
-    .get(`rooms/${roomPk}/reviews`)
+    .get(`rooms/${roomPk}/reviews`, {
+      headers: {
+        Authorization: localStorage.getItem("token")
+          ? `Token ${localStorage.getItem("token")}`
+          : null,
+      },
+    })
     .then((response) => response.data);
 };
 
@@ -224,6 +230,9 @@ export const uploadRoom = (variables: IUplaodRoomVariables) =>
     .post(`rooms/`, variables, {
       headers: {
         "X-CSRFToken": Cookie.get("csrftoken") || "",
+        Authorization: localStorage.getItem("token")
+          ? `Token ${localStorage.getItem("token")}`
+          : null,
       },
     })
     .then((response) => response.data);
@@ -233,6 +242,9 @@ export const editRoom = (variables: IEditRoomVariables) =>
     .put(`rooms/${variables.roomPk}`, variables, {
       headers: {
         "X-CSRFToken": Cookie.get("csrftoken") || "",
+        Authorization: localStorage.getItem("token")
+          ? `Token ${localStorage.getItem("token")}`
+          : null,
       },
     })
     .then((response) => response.data);
@@ -287,6 +299,9 @@ export const reserveBooking = ({ dates, roomPk, guests }: IReserveBooking) => {
     .post(`rooms/${roomPk}/bookings`, data, {
       headers: {
         "X-CSRFToken": Cookie.get("csrftoken") || "",
+        Authorization: localStorage.getItem("token")
+          ? `Token ${localStorage.getItem("token")}`
+          : null,
       },
     })
     .then((response) => response.data);
@@ -313,6 +328,12 @@ export const getReservation = ({
   const year = formData?.year;
   const month = formData?.month;
   return instance
-    .get(`rooms/${roomPk}/bookings?year=${year}&month=${month}`)
+    .get(`rooms/${roomPk}/bookings?year=${year}&month=${month}`, {
+      headers: {
+        Authorization: localStorage.getItem("token")
+          ? `Token ${localStorage.getItem("token")}`
+          : null,
+      },
+    })
     .then((response) => response.data);
 };

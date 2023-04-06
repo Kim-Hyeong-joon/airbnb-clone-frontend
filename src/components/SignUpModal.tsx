@@ -53,7 +53,7 @@ export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
     {
       onSuccess: () => {
         toast({
-          title: "어서오세요!",
+          title: "회원가입이 완료되었습니다!",
           status: "success",
           position: "top",
         });
@@ -62,6 +62,7 @@ export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
         reset();
       },
       onError: (error) => {
+        console.log(error);
         toast({
           title: error.response.data.error,
           status: "error",

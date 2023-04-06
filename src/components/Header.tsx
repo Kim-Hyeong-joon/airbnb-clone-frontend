@@ -54,7 +54,6 @@ export default function Header() {
       });
     },
     onSuccess: () => {
-      //window.location.replace("/");
       delete axios.defaults.headers.common["Authorization"];
       localStorage.removeItem("token");
       if (toastId.current) {
@@ -64,8 +63,10 @@ export default function Header() {
           status: "success",
           variant: "subtle",
           position: "top",
+          duration: 3000,
         });
         queryClient.refetchQueries(["me"]);
+        //window.location.replace("/");
       }
     },
   });

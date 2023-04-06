@@ -154,10 +154,17 @@ export const signUp = ({
       {
         headers: {
           "X-CSRFToken": Cookie.get("csrftoken") || "",
+          Authorization: null,
         },
       }
     )
-    .then((response) => response.data);
+    .then((response) => {
+      localStorage.setItem("token", response.data.token);
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Token ${response.data.token}`;
+      return response.data;
+    });
 
 export const getAmenities = () =>
   instance.get(`rooms/amenities/`).then((response) => response.data);
